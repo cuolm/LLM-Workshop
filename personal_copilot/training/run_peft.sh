@@ -8,8 +8,8 @@ CUDA_VISIBLE_DEVICES=0 WANDB_PROJECT=personal-code-copilot python train.py \
 --splits "train" \
 --max_seq_length 1024 \
 --max_steps 2000 \
---save_steps 500 \
---eval_steps 100 \
+--save_steps 100 \
+--eval_steps 50 \
 --logging_steps 5 \
 --log_level "info" \
 --logging_strategy "steps" \
@@ -22,9 +22,9 @@ CUDA_VISIBLE_DEVICES=0 WANDB_PROJECT=personal-code-copilot python train.py \
 --warmup_ratio 0.1 \
 --max_grad_norm 1.0 \
 --output_dir "results" \
---per_device_train_batch_size 2 \
---per_device_eval_batch_size 2 \
---gradient_accumulation_steps 32 \
+--per_device_train_batch_size 4 \
+--per_device_eval_batch_size 4 \
+--gradient_accumulation_steps 16 \
 --gradient_checkpointing True \
 --use_reentrant True \
 --dataset_text_field "text" \

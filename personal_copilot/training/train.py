@@ -58,11 +58,9 @@ class ModelArguments:
     lora_alpha: Optional[int] = field(default=16)
     lora_dropout: Optional[float] = field(default=0.1)
     lora_r: Optional[int] = field(default=64)
-    lora_target_modules: Optional[str] = field(
-        default="q_proj,k_proj,v_proj,o_proj,down_proj,up_proj,gate_proj",
-        metadata={
-            "help": "comma separated list of target modules to apply LoRA layers to"
-        },
+    lora_target_modules: str = field(
+            default="all-linear",
+            metadata={"help": "Modules to apply LoRA. Use 'all-linear' for best results."}
     )
     use_nested_quant: Optional[bool] = field(
         default=False,
@@ -388,7 +386,7 @@ def create_and_prepare_model(args, data_args, training_args):
             quantization_config=bnb_config,
             device_map=device_map,
             trust_remote_code=True,
-            attn_implementation="flash_attention_2" if args.use_flash_attn else "eager",
+            attn_implementation="flash_attention_2" if args.use_flash_attn else "sdpa",
         )
 
     if (
@@ -416,14 +414,18 @@ def create_and_prepare_model(args, data_args, training_args):
         model = get_peft_model(model, peft_config)
     elif args.use_peft_lora and args.use_unsloth:
         # Do model patching and add fast LoRA weights
+
+        target_modules = args.lora_target_modules
+        if target_modules == "all-linear":
+            target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+        elif target_modules != "all-linear":
+            target_modules = target_modules.split(",")
         model = FastLanguageModel.get_peft_model(
             model,
             lora_alpha=args.lora_alpha,
             lora_dropout=args.lora_dropout,
             r=args.lora_r,
-            target_modules=args.lora_target_modules.split(",")
-            if args.lora_target_modules != "all-linear"
-            else args.lora_target_modules,
+            target_modules=target_modules,
             use_gradient_checkpointing=training_args.gradient_checkpointing,
             random_state=training_args.seed,
             max_seq_length=data_args.max_seq_length,
