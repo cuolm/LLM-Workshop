@@ -159,29 +159,31 @@ def build_content(markdown, code, output):
 class PersonalCopilotDatasetReader(BaseDiskReader):
     name = "👾 PersonalCopilot"
 
-    def __init__(
-        self,
-        data_folder: DataFolderLike,
-        limit: int = -1,
-        progress: bool = False,
-        adapter: Callable = None,
-        text_key: str = "text",
-        id_key: str = "id",
-        default_metadata: dict = None,
-        recursive: bool = True,
-        glob_pattern: str | None = None,
-    ):
-        super().__init__(
-            data_folder,
-            limit,
-            progress,
-            adapter,
-            text_key,
-            id_key,
-            default_metadata,
-            recursive,
-            glob_pattern,
-        )
+    def __init__(  
+        self,  
+        data_folder: DataFolderLike,  
+        limit: int = -1,  
+        file_progress: bool = False,  # renamed from progress  
+        doc_progress: bool = False,  
+        adapter: Callable = None,  
+        text_key: str = "text",  
+        id_key: str = "id",  
+        default_metadata: dict = None,  
+        recursive: bool = True,  
+        glob_pattern: str | None = None,  
+    ):  
+        super().__init__(  
+            data_folder=data_folder,  
+            limit=limit,  
+            file_progress=file_progress,  
+            doc_progress=doc_progress,  
+            adapter=adapter,  
+            text_key=text_key,  
+            id_key=id_key,  
+            default_metadata=default_metadata,  
+            recursive=recursive,  
+            glob_pattern=glob_pattern,  
+        )  
         self.empty_warning = False
 
     def read_file(self, filepath: str):
@@ -191,7 +193,7 @@ class PersonalCopilotDatasetReader(BaseDiskReader):
             ):
                 content = ""
             else:
-                with self.data_folder.open(filepath, "r", encoding="utf-8") as file:
+                with self.data_folder.open(filepath, "r", encoding="utf-8") as file:           
                     content = file.read()
                     if filepath.endswith("ipynb"):
                         content = segment(content)

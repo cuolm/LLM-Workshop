@@ -113,7 +113,7 @@ class ModelArguments:
 @dataclass
 class DataTrainingArguments:
     dataset_name: Optional[str] = field(
-        default="smangrul/hug_stack",
+        default="gh_data",
         metadata={"help": "The preference dataset to use."},
     )
     dataset_text_field: str = field(
@@ -250,7 +250,9 @@ class ConstantLengthDataset(IterableDataset):
 
 
 def create_datasets(tokenizer, args, seed):
-    dataset = load_dataset(args.dataset_name, split=args.splits)
+    dataset = load_dataset("json", data_files="../dataset_generation/gh_data/*.jsonl.gz")
+    #dataset = load_dataset(args.dataset_name, split=args.splits)
+    dataset = dataset["train"]
     dataset = dataset.train_test_split(
         test_size=args.test_size, seed=seed, shuffle=True
     )

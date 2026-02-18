@@ -16,6 +16,7 @@
 from datatrove.executor.base import PipelineExecutor
 from datatrove.executor.local import LocalPipelineExecutor
 from datatrove.pipeline.dedup import MinhashDedupSignature
+from datatrove.utils.hashing import HashConfig
 from datatrove.pipeline.dedup.minhash import (
     MinhashConfig,
     MinhashDedupBuckets,
@@ -28,12 +29,12 @@ from datatrove.pipeline.writers.jsonl import JsonlWriter
 from reader import PersonalCopilotDatasetReader
 from filter import BasicCodeFilter
 
-MIRROR_DIRECTORY = "hf_public_repos"
-TOTAL_TASKS = 16
+MIRROR_DIRECTORY = "gh_repo"
+TOTAL_TASKS = 10
 
 # you can also change ngrams or the number of buckets and their size here
 minhash_config = MinhashConfig(
-    use_64bit_hashes=True
+    hash_config=HashConfig(precision=64)
 )  # better precision -> fewer false positives (collisions)
 
 
@@ -81,7 +82,7 @@ def run_code_dataset_generation():
             input_folder="remove_ids",
             exclusion_writer=JsonlWriter("removed"),
         ),
-        JsonlWriter(output_folder="hf_stack"),
+        JsonlWriter(output_folder="gh_data"),
     ]
 
     executor_0: PipelineExecutor = LocalPipelineExecutor(

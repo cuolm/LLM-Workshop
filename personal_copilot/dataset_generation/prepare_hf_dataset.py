@@ -19,8 +19,8 @@ import gzip
 import json
 from datasets import Dataset
 
-DATAFOLDER = "hf_stack"
-HF_DATASET_NAME = "smangrul/hug_stack"
+DATAFOLDER = "hf_dataset"
+#HF_DATASET_NAME = "smangrul/hug_stack"
 
 
 def load_gzip_jsonl(file_path):
@@ -31,7 +31,7 @@ def load_gzip_jsonl(file_path):
     return data
 
 
-def create_hf_dataset():
+def create_dataset():
     df = None
     for file in os.listdir(DATAFOLDER):
         data = load_gzip_jsonl(os.path.join(DATAFOLDER, file))
@@ -41,7 +41,6 @@ def create_hf_dataset():
             df = pd.concat([df, pd.DataFrame(data)])
 
     dataset = Dataset.from_pandas(df)
-    dataset.push_to_hub(HF_DATASET_NAME, private=False)
 
 
 if __name__ == "__main__":

@@ -1,29 +1,30 @@
+export TRANSFORMERS_NO_TF_IMPORT=1
+export TF_ENABLE_ONEDNN_OPTS=0
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export WANDB_DISABLED=true
 CUDA_VISIBLE_DEVICES=0 WANDB_PROJECT=personal-code-copilot python train.py \
---model_name_or_path "codellama/CodeLlama-7b-Instruct-hf" \
---dataset_name "smangrul/hug_stack" \
+--model_name_or_path "Qwen/Qwen2.5-Coder-7B" \
+--dataset_name "gh_data" \
 --splits "train" \
---max_seq_len 2048 \
+--max_seq_length 1024 \
 --max_steps 2000 \
 --save_steps 500 \
 --eval_steps 100 \
 --logging_steps 5 \
 --log_level "info" \
 --logging_strategy "steps" \
---evaluation_strategy "steps" \
+--eval_strategy "steps" \
 --save_strategy "steps" \
---push_to_hub \
---hub_private_repo True \
---hub_strategy "every_save" \
 --bf16 True \
 --learning_rate 3e-4 \
 --lr_scheduler_type "cosine" \
 --weight_decay 0.1 \
 --warmup_ratio 0.1 \
 --max_grad_norm 1.0 \
---output_dir "codellama-hugcoder" \
---per_device_train_batch_size 16 \
---per_device_eval_batch_size 16 \
---gradient_accumulation_steps 4 \
+--output_dir "results" \
+--per_device_train_batch_size 2 \
+--per_device_eval_batch_size 2 \
+--gradient_accumulation_steps 32 \
 --gradient_checkpointing True \
 --use_reentrant True \
 --dataset_text_field "text" \
@@ -38,4 +39,4 @@ CUDA_VISIBLE_DEVICES=0 WANDB_PROJECT=personal-code-copilot python train.py \
 --use_4bit_quantization True \
 --use_nested_quant True \
 --bnb_4bit_compute_dtype "bfloat16" \
---use_flash_attn True
+--use_flash_attn False 
